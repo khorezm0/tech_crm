@@ -26,9 +26,9 @@ namespace DAL.Repositories
             {
                 if (appuser != null)
                 {
-                 var obj = _appDbContext.Add<AppUser>(appuser);
-                 await _appDbContext.SaveChangesAsync();
-                 return obj.Entity;           
+                    var obj = _appDbContext.Add<AppUser>(appuser);
+                    await _appDbContext.SaveChangesAsync();
+                    return obj.Entity;
                 }
                 else
                 {
@@ -45,13 +45,13 @@ namespace DAL.Repositories
         {
             try
             {
-                if(appuser!=null)
+                if (appuser != null)
                 {
                     var obj = _appDbContext.Remove(appuser);
-                    if (obj!=null)
+                    if (obj != null)
                     {
                         _appDbContext.SaveChangesAsync();
-                    }     
+                    }
                 }
             }
             catch (Exception)
@@ -68,7 +68,7 @@ namespace DAL.Repositories
                 if (obj != null)
                     return obj;
                 else
-                    return null;      
+                    return null;
             }
             catch (Exception)
             {
@@ -80,9 +80,9 @@ namespace DAL.Repositories
         {
             try
             {
-                if(Id!=null)
+                if (Id != null)
                 {
-                  var Obj = _appDbContext.AppUsers.FirstOrDefault(x => x.Id == Id);
+                    var Obj = _appDbContext.AppUsers.FirstOrDefault(x => x.Id == Id);
                     if (Obj != null)
                         return Obj;
                     else
@@ -105,9 +105,9 @@ namespace DAL.Repositories
             {
                 if (appuser != null)
                 {
-                   var obj = _appDbContext.Update(appuser);
+                    var obj = _appDbContext.Update(appuser);
                     if (obj != null)
-                        _appDbContext.SaveChanges();          
+                        _appDbContext.SaveChanges();
                 }
             }
             catch (Exception)

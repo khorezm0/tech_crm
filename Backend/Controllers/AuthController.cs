@@ -20,7 +20,13 @@ namespace Backend.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<AppUser> signInManager;
-        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+
+        public AuthController(
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration
+        )
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -30,11 +36,14 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterVM registerVM)
+        public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
         {
             var IsExist = await userManager.FindByNameAsync(registerVM.Name);
             if (IsExist != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new Response { Status = "Error", Message = "User already exists!" }
+                );
             AppUser appUser = new AppUser
             {
                 UserName = registerVM.Name,
@@ -49,7 +58,14 @@ namespace Backend.Controllers
             };
             var result = await userManager.CreateAsync(appUser, registerVM.Password);
             if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    new Response
+                    {
+                        Status = "Error",
+                        Message = "User creation failed! Please check user details and try again."
+                    }
+                );
             if (!await roleManager.RoleExistsAsync(registerVM.UserRole))
                 await roleManager.CreateAsync(new IdentityRole(registerVM.UserRole));
             if (await roleManager.RoleExistsAsync(registerVM.UserRole))
@@ -72,8 +88,8 @@ namespace Backend.Controllers
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
-                    new Claim(ClaimTypes.Email,user.Email),
+                    new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+                    new Claim(ClaimTypes.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -82,22 +98,29 @@ namespace Backend.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"]));
+                var authSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
+                );
 
                 var token = new JwtSecurityToken(
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );
+                    signingCredentials: new SigningCredentials(
+                        authSigningKey,
+                        SecurityAlgorithms.HmacSha256
+                    )
+                );
 
-                return Ok(new
-                {
-                    api_key = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo,
-                    user = user,
-                    Role = userRoles,
-                    status = "User Login Successfully"
-                });
+                return Ok(
+                    new
+                    {
+                        api_key = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo,
+                        user = user,
+                        Role = userRoles,
+                        status = "User Login Successfully"
+                    }
+                );
             }
             return Unauthorized();
         }

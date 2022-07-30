@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace DAL.Models
 {
-    public class AppRoles
-    {
-       
-    }
+    public class AppRoles { }
 }

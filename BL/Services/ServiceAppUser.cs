@@ -11,11 +11,13 @@ namespace BL.Services
     public class ServiceAppUser
     {
         public readonly IRepository<AppUser> _repository;
+
         public ServiceAppUser(IRepository<AppUser> repository)
         {
             _repository = repository;
         }
-        //Create Method 
+
+        //Create Method
         public async Task<AppUser> AddUser(AppUser appUser)
         {
             try
@@ -31,13 +33,11 @@ namespace BL.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
         public void DeleteUser(int Id)
-
         {
             try
             {
@@ -54,7 +54,6 @@ namespace BL.Services
         }
 
         public void UpdateUser(int Id)
-
         {
             try
             {
@@ -67,25 +66,20 @@ namespace BL.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
-
         }
 
         public IEnumerable<AppUser> GetAllUser()
         {
             try
             {
-               return _repository.GetAll().ToList();
+                return _repository.GetAll().ToList();
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
-
-
     }
 }

@@ -11,15 +11,13 @@ namespace DAL.Data
 {
     public class AppDbContext : IdentityDbContext<AppUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
         }
-        public DbSet<AppUser> AppUsers { get; set; }
 
+        public DbSet<AppUser> AppUsers { get; set; }
     }
 }

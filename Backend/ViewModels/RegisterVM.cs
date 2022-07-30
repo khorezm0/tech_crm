@@ -2,7 +2,7 @@
 
 namespace Backend.ViewModels
 {
-    public class RegisterVM 
+    public class RegisterVM
     {
         public string? Name { get; set; }
         public string? AccountType { get; set; }
