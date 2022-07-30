@@ -39,21 +39,23 @@ namespace Backend.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
         {
-            var IsExist = await userManager.FindByNameAsync(registerVM.Login);
-            if (IsExist != null)
+            var isExist = await userManager.FindByNameAsync(registerVM.Login);
+            if (isExist != null)
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
                     new Response { Status = "Error", Message = "User already exists!" }
                 );
+            
             User user = new User
             {
                 UserName = registerVM.Login,
-                AccountType = registerVM.AccountType,
                 Email = registerVM.Email,
                 PhoneNumber = registerVM.PhoneNumber,
                 PasswordHash = registerVM.Password,
-                BaseRoleId = 1,
-                CreatedTime = DateTime.Now
+                CreatedTime = DateTime.Now,
+                FirstName = registerVM.FirstName,
+                LastName = registerVM.LastName,
+                NormalizedUserName = registerVM.Login.Trim()
             };
             var result = await userManager.CreateAsync(user, registerVM.Password);
             if (!result.Succeeded)
@@ -65,12 +67,12 @@ namespace Backend.Controllers
                         Message = "User creation failed! Please check user details and try again."
                     }
                 );
-            // if (!await roleManager.RoleExistsAsync(registerVM.UserRole))
-            //     await roleManager.CreateAsync(new IdentityRole(registerVM.UserRole));
-            // if (await roleManager.RoleExistsAsync(registerVM.UserRole))
-            // {
-            //     await userManager.AddToRoleAsync(user, registerVM.UserRole);
-            // }
+            if (!await roleManager.RoleExistsAsync("Default"))
+                await roleManager.CreateAsync(new IdentityRole("Default"));
+            if (await roleManager.RoleExistsAsync("Default"))
+            {
+                await userManager.AddToRoleAsync(user, "Default");
+            }
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 

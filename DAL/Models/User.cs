@@ -9,10 +9,8 @@ namespace DAL.Models
 {
     public class User : IdentityUser
     {
-        public int BaseRoleId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public int? AccountType { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
