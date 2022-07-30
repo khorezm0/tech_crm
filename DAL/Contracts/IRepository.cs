@@ -9,6 +9,6 @@
 
         public IEnumerable<T> GetAll();
 
-        public T GetById(int Id);
+        public T GetById(string Id);
     }
 }

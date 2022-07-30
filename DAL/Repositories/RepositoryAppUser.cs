@@ -10,23 +10,23 @@ using DAL.Contracts;
 
 namespace DAL.Repositories
 {
-    public class RepositoryAppUser : IRepository<AppUser>
+    public class RepositoryAppUser : IRepository<User>
     {
         private readonly AppDbContext _appDbContext;
         private readonly ILogger _logger;
 
-        public RepositoryAppUser(ILogger<AppUser> logger)
+        public RepositoryAppUser(ILogger<User> logger)
         {
             _logger = logger;
         }
 
-        public async Task<AppUser> Create(AppUser appuser)
+        public async Task<User> Create(User appuser)
         {
             try
             {
                 if (appuser != null)
                 {
-                    var obj = _appDbContext.Add<AppUser>(appuser);
+                    var obj = _appDbContext.Add<User>(appuser);
                     await _appDbContext.SaveChangesAsync();
                     return obj.Entity;
                 }
@@ -41,7 +41,7 @@ namespace DAL.Repositories
             }
         }
 
-        public void Delete(AppUser appuser)
+        public void Delete(User appuser)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace DAL.Repositories
             }
         }
 
-        public IEnumerable<AppUser> GetAll()
+        public IEnumerable<User> GetAll()
         {
             try
             {
@@ -76,7 +76,7 @@ namespace DAL.Repositories
             }
         }
 
-        public AppUser GetById(int Id)
+        public User GetById(string Id)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace DAL.Repositories
             }
         }
 
-        public void Update(AppUser appuser)
+        public void Update(User appuser)
         {
             try
             {

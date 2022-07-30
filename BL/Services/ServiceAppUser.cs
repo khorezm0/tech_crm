@@ -10,26 +10,19 @@ namespace BL.Services
 {
     public class ServiceAppUser
     {
-        public readonly IRepository<AppUser> _repository;
+        public readonly IRepository<User> Repository;
 
-        public ServiceAppUser(IRepository<AppUser> repository)
+        public ServiceAppUser(IRepository<User> repository)
         {
-            _repository = repository;
+            Repository = repository;
         }
 
         //Create Method
-        public async Task<AppUser> AddUser(AppUser appUser)
+        public async Task<User> AddUser(User user)
         {
             try
             {
-                if (appUser == null)
-                {
-                    throw new ArgumentNullException(nameof(appUser));
-                }
-                else
-                {
-                    return await _repository.Create(appUser);
-                }
+                return await Repository.Create(user);
             }
             catch (Exception)
             {
@@ -37,15 +30,13 @@ namespace BL.Services
             }
         }
 
-        public void DeleteUser(int Id)
+        public void DeleteUser(string Id)
         {
             try
             {
-                if (Id != 0)
-                {
-                    var obj = _repository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-                    _repository.Delete(obj);
-                }
+                if (string.IsNullOrEmpty(Id) || Id == "0") return;
+                var obj = Repository.GetAll().FirstOrDefault(x => x.Id == Id);
+                if (obj != null) Repository.Delete(obj);
             }
             catch (Exception)
             {
@@ -53,16 +44,14 @@ namespace BL.Services
             }
         }
 
-        public void UpdateUser(int Id)
+        public void UpdateUser(string Id)
         {
             try
             {
-                if (Id != 0)
-                {
-                    var obj = _repository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-                    if (obj != null)
-                        _repository.Update(obj);
-                }
+                if (string.IsNullOrEmpty(Id) || Id == "0") return;
+                var obj = Repository.GetAll().FirstOrDefault(x => x.Id == Id);
+                if (obj != null)
+                    Repository.Update(obj);
             }
             catch (Exception)
             {
@@ -70,11 +59,11 @@ namespace BL.Services
             }
         }
 
-        public IEnumerable<AppUser> GetAllUser()
+        public IEnumerable<User> GetAllUser()
         {
             try
             {
-                return _repository.GetAll().ToList();
+                return Repository.GetAll().ToList();
             }
             catch (Exception)
             {

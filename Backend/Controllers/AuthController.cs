@@ -12,18 +12,19 @@ using Response = Backend.Commons.Response;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> userManager;
+        private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<AppUser> signInManager;
+        private readonly SignInManager<User> signInManager;
 
         public AuthController(
-            UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration
         )
@@ -38,25 +39,23 @@ namespace Backend.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
         {
-            var IsExist = await userManager.FindByNameAsync(registerVM.Name);
+            var IsExist = await userManager.FindByNameAsync(registerVM.Login);
             if (IsExist != null)
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
                     new Response { Status = "Error", Message = "User already exists!" }
                 );
-            AppUser appUser = new AppUser
+            User user = new User
             {
-                UserName = registerVM.Name,
+                UserName = registerVM.Login,
                 AccountType = registerVM.AccountType,
                 Email = registerVM.Email,
-                PhoneNumber = registerVM.PhoneNo,
-                Password = registerVM.Password,
-                ShopName = registerVM.ShopName,
-                BusinessType = registerVM.BusinessType,
-                UserRole = registerVM.UserRole,
-                IsDeleted = registerVM.IsDeleted
+                PhoneNumber = registerVM.PhoneNumber,
+                PasswordHash = registerVM.Password,
+                BaseRoleId = 1,
+                CreatedTime = DateTime.Now
             };
-            var result = await userManager.CreateAsync(appUser, registerVM.Password);
+            var result = await userManager.CreateAsync(user, registerVM.Password);
             if (!result.Succeeded)
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
@@ -66,12 +65,12 @@ namespace Backend.Controllers
                         Message = "User creation failed! Please check user details and try again."
                     }
                 );
-            if (!await roleManager.RoleExistsAsync(registerVM.UserRole))
-                await roleManager.CreateAsync(new IdentityRole(registerVM.UserRole));
-            if (await roleManager.RoleExistsAsync(registerVM.UserRole))
-            {
-                await userManager.AddToRoleAsync(appUser, registerVM.UserRole);
-            }
+            // if (!await roleManager.RoleExistsAsync(registerVM.UserRole))
+            //     await roleManager.CreateAsync(new IdentityRole(registerVM.UserRole));
+            // if (await roleManager.RoleExistsAsync(registerVM.UserRole))
+            // {
+            //     await userManager.AddToRoleAsync(user, registerVM.UserRole);
+            // }
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 

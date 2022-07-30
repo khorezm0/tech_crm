@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable disable
+
 namespace DAL.Data
 {
-    public class AppDbContext : IdentityDbContext<AppUser>
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -18,6 +20,6 @@ namespace DAL.Data
             base.OnModelCreating(builder);
         }
 
-        public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<User> AppUsers { get; set; }
     }
 }
