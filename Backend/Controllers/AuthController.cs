@@ -1,14 +1,14 @@
-﻿using DAL.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Backend.Commons;
+using Backend.Models.Commons;
+using Backend.Models.Responses.Users;
 using Backend.ViewModels;
-using Response = Backend.Commons.Response;
+using Entities;
 
 namespace Backend.Controllers
 {
@@ -37,48 +37,55 @@ namespace Backend.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterVM registerVM)
+        public async Task<ResponseModel<UserModel>> Register([FromBody] RegisterVM registerVM)
         {
             var isExist = await userManager.FindByNameAsync(registerVM.Login);
             if (isExist != null)
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "User already exists!" }
-                );
-            
-            User user = new User
-            {
-                UserName = registerVM.Login,
-                Email = registerVM.Email,
-                PhoneNumber = registerVM.PhoneNumber,
-                PasswordHash = registerVM.Password,
-                CreatedTime = DateTime.Now,
-                FirstName = registerVM.FirstName,
-                LastName = registerVM.LastName,
-                NormalizedUserName = registerVM.Login.Trim()
-            };
+                return new ResponseModel<UserModel>
+                {
+                    Status = DefaultResponseStatus.BadRequest,
+                    Message = "User already exists!"
+                };
+
+            var user = new User(
+                null,
+                registerVM.Login?.Trim(),
+                registerVM.PhoneNumber,
+                false,
+                registerVM.Email,
+                false,
+                registerVM.Password,
+                registerVM.FirstName,
+                registerVM.LastName,
+                DateTime.Now,
+                null
+            );
             var result = await userManager.CreateAsync(user, registerVM.Password);
             if (!result.Succeeded)
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new Response
-                    {
-                        Status = "Error",
-                        Message = "User creation failed! Please check user details and try again."
-                    }
+                return new ResponseModel<UserModel>
+                {
+                    Status = DefaultResponseStatus.Fail,
+                    Message = "User creation failed! Please check user details and try again."
+                };
+            if (!await roleManager.RoleExistsAsync(Common.Enums.UserRole.Default.ToString()))
+                await roleManager.CreateAsync(
+                    new IdentityRole(Common.Enums.UserRole.Default.ToString())
                 );
-            if (!await roleManager.RoleExistsAsync("Default"))
-                await roleManager.CreateAsync(new IdentityRole("Default"));
-            if (await roleManager.RoleExistsAsync("Default"))
+            if (await roleManager.RoleExistsAsync(Common.Enums.UserRole.Default.ToString()))
             {
-                await userManager.AddToRoleAsync(user, "Default");
+                await userManager.AddToRoleAsync(user, Common.Enums.UserRole.Default.ToString());
             }
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+
+            return new ResponseModel<UserModel>
+            {
+                Status = DefaultResponseStatus.Ok,
+                Message = "User created successfully!"
+            };
         }
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginVM loginVM)
+        public async Task<ResponseModel<AuthorizationModel>> Login([FromBody] LoginVM loginVM)
         {
             //var user1 = await userManager.FindByIdAsync(loginVM.Id);
             var user = await userManager.FindByNameAsync(loginVM.UserName);
@@ -112,18 +119,20 @@ namespace Backend.Controllers
                     )
                 );
 
-                return Ok(
-                    new
+                return new ResponseModel<AuthorizationModel>()
+                {
+                    Status = DefaultResponseStatus.Ok,
+                    Data = new AuthorizationModel()
                     {
-                        api_key = new JwtSecurityTokenHandler().WriteToken(token),
-                        expiration = token.ValidTo,
-                        user = user,
-                        Role = userRoles,
-                        status = "User Login Successfully"
+                        ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
+                        Expiration = token.ValidTo,
+                        User = UserModel.FromEntity(user),
+                        Role = userRoles.FirstOrDefault() ?? string.Empty,
                     }
-                );
+                };
             }
-            return Unauthorized();
+
+            return new ResponseModel<AuthorizationModel>() { Status = DefaultResponseStatus.Fail };
         }
     }
 }

@@ -2,13 +2,13 @@
 {
     public interface IRepository<T>
     {
-        public Task<T> Create(T _object);
-        public void Delete(T _object);
+        public Task<T> CreateAsync(T obj);
+        public Task DeleteAsync(T obj);
 
-        public void Update(T _object);
+        public Task<T> UpdateAsync(T obj);
 
-        public IEnumerable<T> GetAll();
+        public Task<IEnumerable<T>> GetAllAsync();
 
-        public T GetById(string Id);
+        public Task<T> GetByIdAsync(string id);
     }
 }

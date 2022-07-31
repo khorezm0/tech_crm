@@ -1,7 +1,7 @@
 using BL.Services;
+using Entities;
 using DAL.Contracts;
 using DAL.Data;
-using DAL.Models;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -20,8 +20,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 //Add Service Injection
-builder.Services.AddSingleton<IRepository<User>, RepositoryAppUser>();
-builder.Services.AddSingleton<ServiceAppUser, ServiceAppUser>();
+builder.Services.AddSingleton<IRepository<User>, UsersRepository>();
+builder.Services.AddSingleton<UsersService, UsersService>();
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,7 +38,6 @@ builder.Services.AddApiVersioning(options =>
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
     options.ReportApiVersions = true;
 });
-
 
 builder.Services.AddSwaggerGen(c =>
 {
