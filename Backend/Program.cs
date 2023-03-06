@@ -1,5 +1,4 @@
-using BL.Services;
-using Entities;
+using Business.Abstractions;
 using DAL.Contracts;
 using DAL.Data;
 using DAL.Repositories;
@@ -9,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Business.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 
@@ -20,8 +20,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 //Add Service Injection
-builder.Services.AddSingleton<IRepository<User>, UsersRepository>();
-builder.Services.AddSingleton<UsersService, UsersService>();
+builder.Services.AddSingleton<UsersRepository>();
+builder.Services.AddSingleton<UsersService>();
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

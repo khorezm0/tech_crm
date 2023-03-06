@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Data
 {
-    public class AppDbContext : IdentityDbContext<User>
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -20,6 +20,6 @@ namespace DAL.Data
             base.OnModelCreating(builder);
         }
 
-        public DbSet<User> AppUsers { get; set; }
+        public DbSet<UserDbModel> Users { get; set; }
     }
 }

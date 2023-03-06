@@ -20,13 +20,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BL\BL.csproj" />
+    <ProjectReference Include="..\Buisiness\Buisiness.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
   </ItemGroup>
 

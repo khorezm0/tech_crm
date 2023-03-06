@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Backend.Models.Commons;
-using Backend.Models.Responses.Users;
-using Backend.ViewModels;
-using Entities;
+using Backend.ClientData.Auth;
+using Backend.ClientData.Commons;
+using Backend.ClientData.Users;
+using Business.Abstractions;
+using Business.Services;
 
 namespace Backend.Controllers
 {
@@ -17,122 +17,147 @@ namespace Backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<User> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<User> signInManager;
-
+        private readonly UsersService _usersService;
+        
         public AuthController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            RoleManager<IdentityRole> roleManager,
+            UsersService usersService,
             IConfiguration configuration
         )
         {
-            this.userManager = userManager;
-            this.roleManager = roleManager;
             _configuration = configuration;
-            this.signInManager = signInManager;
+            _usersService = usersService;
         }
 
-        [HttpPost]
-        [Route("Register")]
-        public async Task<ResponseModel<UserModel>> Register([FromBody] RegisterVM registerVM)
+        [HttpPost("Register")]
+        public async Task<ApiResponse<UserDto>> Register([FromBody] RegisterPostRequest registerPostRequest)
         {
-            var isExist = await userManager.FindByNameAsync(registerVM.Login);
+            registerPostRequest.Login = registerPostRequest.Login.Trim();
+            
+            var isExist = await _usersService.FindByNameAsync(registerPostRequest.Login);
             if (isExist != null)
-                return new ResponseModel<UserModel>
+                return new ApiResponse<UserDto>
                 {
                     Status = DefaultResponseStatus.BadRequest,
                     Message = "User already exists!"
                 };
 
-            var user = new User(
-                null,
-                registerVM.Login?.Trim(),
-                registerVM.PhoneNumber,
-                false,
-                registerVM.Email,
-                false,
-                registerVM.Password,
-                registerVM.FirstName,
-                registerVM.LastName,
-                DateTime.Now,
-                null
-            );
-            var result = await userManager.CreateAsync(user, registerVM.Password);
-            if (!result.Succeeded)
-                return new ResponseModel<UserModel>
+            var user = new User
+            {
+                UserName = registerPostRequest.Login?.Trim(),
+                PhoneNumber = registerPostRequest.PhoneNumber,
+                Email = registerPostRequest.Email,
+                PasswordHash = registerPostRequest.Password,
+                FirstName = registerPostRequest.FirstName,
+                LastName = registerPostRequest.LastName,
+                CreatedTime = DateTime.Now,
+            };
+
+            var result = await _usersService.AddAsync(user);
+            if (result == null)
+            {
+                return new ApiResponse<UserDto>
                 {
                     Status = DefaultResponseStatus.Fail,
-                    Message = "User creation failed! Please check user details and try again."
+                    Message = "Unknown exception occured!"
                 };
-            if (!await roleManager.RoleExistsAsync(Common.Enums.UserRole.Default.ToString()))
-                await roleManager.CreateAsync(
-                    new IdentityRole(Common.Enums.UserRole.Default.ToString())
-                );
-            if (await roleManager.RoleExistsAsync(Common.Enums.UserRole.Default.ToString()))
-            {
-                await userManager.AddToRoleAsync(user, Common.Enums.UserRole.Default.ToString());
             }
-
-            return new ResponseModel<UserModel>
+            
+            return new ApiResponse<UserDto>
             {
                 Status = DefaultResponseStatus.Ok,
                 Message = "User created successfully!"
             };
         }
 
-        [HttpPost]
-        [Route("Login")]
-        public async Task<ResponseModel<AuthorizationModel>> Login([FromBody] LoginVM loginVM)
+        [HttpPost("Login")]
+        public async Task<ApiResponse<AuthorizationDto>> Login([FromBody] LoginPostRequest loginPostRequest)
         {
-            //var user1 = await userManager.FindByIdAsync(loginVM.Id);
-            var user = await userManager.FindByNameAsync(loginVM.UserName);
-            if (user != null && await userManager.CheckPasswordAsync(user, loginVM.Password))
+            //TODO: create JWT
+            var user = await userManager.FindByNameAsync(loginPostRequest.UserName);
+            if (user == null || !await userManager.CheckPasswordAsync(user, loginPostRequest.Password))
+                return new ApiResponse<AuthorizationDto> { Status = DefaultResponseStatus.Fail };
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
             {
-                var userRoles = await userManager.GetRolesAsync(user);
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            var identity = new ClaimsIdentity
+            {
+            };
 
-                var authClaims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+            identity.AddClaims(authClaims.Concat(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole))));
 
-                foreach (var userRole in userRoles)
+            var authSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
+            );
+
+            var token = new JwtSecurityToken(
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(
+                    authSigningKey,
+                    SecurityAlgorithms.HmacSha256
+                )
+            );
+
+            return new ApiResponse<AuthorizationDto>
+            {
+                Status = DefaultResponseStatus.Ok,
+                Data = new AuthorizationDto
                 {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = token.ValidTo,
+                    User = UserDto.Map(user),
+                    Role = userRoles.FirstOrDefault() ?? string.Empty,
                 }
+            };
+        }
 
-                var authSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
-                );
+        [HttpPost("Telegram")]
+        public async Task<ApiResponse<AuthorizationDto>> TelegramLogin([FromQuery] TelegramAuthGetRequest request)
+        {
+            var user = await userManager.FindByIdAsync(request.UserId);
+            if (user == null || !await userManager.CheckPasswordAsync(user, loginPostRequest.Password))
+                return new ApiResponse<AuthorizationDto> { Status = DefaultResponseStatus.Fail };
 
-                var token = new JwtSecurityToken(
-                    expires: DateTime.Now.AddHours(3),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(
-                        authSigningKey,
-                        SecurityAlgorithms.HmacSha256
-                    )
-                );
+            var userRoles = await userManager.GetRolesAsync(user);
 
-                return new ResponseModel<AuthorizationModel>()
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+
+            var authSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
+            );
+
+            var token = new JwtSecurityToken(
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(
+                    authSigningKey,
+                    SecurityAlgorithms.HmacSha256
+                )
+            );
+
+            return new ApiResponse<AuthorizationDto>
+            {
+                Status = DefaultResponseStatus.Ok,
+                Data = new AuthorizationDto
                 {
-                    Status = DefaultResponseStatus.Ok,
-                    Data = new AuthorizationModel()
-                    {
-                        ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
-                        Expiration = token.ValidTo,
-                        User = UserModel.FromEntity(user),
-                        Role = userRoles.FirstOrDefault() ?? string.Empty,
-                    }
-                };
-            }
-
-            return new ResponseModel<AuthorizationModel>() { Status = DefaultResponseStatus.Fail };
+                    ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
+                    Expiration = token.ValidTo,
+                    User = UserDto.Map(user),
+                    Role = userRoles.FirstOrDefault() ?? string.Empty,
+                }
+            };
         }
     }
 }

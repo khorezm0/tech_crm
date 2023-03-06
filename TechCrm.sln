@@ -5,13 +5,17 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "Backend\Backend.csproj", "{7036F8B4-2BA6-4779-B438-F7D2F3CD071F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{7BDD4D8F-0501-4EF1-A091-33C722AD2DD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buisiness", "Buisiness\Buisiness.csproj", "{7BDD4D8F-0501-4EF1-A091-33C722AD2DD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{307FBDB5-A87C-45CE-A225-6D7F20227483}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{EC4BD7EC-ADE2-4204-BC58-BA942A9A4E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{518EE5BE-9694-4E34-AEA8-DD7A70A1F1D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buisiness.Abstractions", "Buisiness.Abstractions\Buisiness.Abstractions.csproj", "{518EE5BE-9694-4E34-AEA8-DD7A70A1F1D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Migrations\Migrations.csproj", "{3272BCCE-3BDE-4EE2-8963-17ADC91FAA7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{6770A090-C08E-4B93-AE39-5537A23AA861}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{518EE5BE-9694-4E34-AEA8-DD7A70A1F1D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{518EE5BE-9694-4E34-AEA8-DD7A70A1F1D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{518EE5BE-9694-4E34-AEA8-DD7A70A1F1D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3272BCCE-3BDE-4EE2-8963-17ADC91FAA7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3272BCCE-3BDE-4EE2-8963-17ADC91FAA7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3272BCCE-3BDE-4EE2-8963-17ADC91FAA7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3272BCCE-3BDE-4EE2-8963-17ADC91FAA7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6770A090-C08E-4B93-AE39-5537A23AA861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6770A090-C08E-4B93-AE39-5537A23AA861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6770A090-C08E-4B93-AE39-5537A23AA861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6770A090-C08E-4B93-AE39-5537A23AA861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
