@@ -18,88 +18,56 @@ namespace DAL.Repositories
 
         public async Task<UserDbModel> CreateAsync(UserDbModel appuser)
         {
-            try
+            if (appuser != null)
             {
-                if (appuser != null)
-                {
-                    var obj = _appDbContext.Add<UserDbModel>(appuser);
-                    await _appDbContext.SaveChangesAsync();
-                    return obj.Entity;
-                }
-                else
-                {
-                    return null;
-                }
+                var obj = _appDbContext.Add<UserDbModel>(appuser);
+                await _appDbContext.SaveChangesAsync();
+                return obj.Entity;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            return null;
         }
 
         public async Task DeleteAsync(UserDbModel appuser)
         {
-            try
+            if (appuser != null)
             {
-                if (appuser != null)
-                {
-                    _appDbContext.Remove(appuser);
-                    await _appDbContext.SaveChangesAsync();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                _appDbContext.Remove(appuser);
+                await _appDbContext.SaveChangesAsync();
             }
         }
 
         public async Task<IEnumerable<UserDbModel>> GetAllAsync()
         {
-            try
-            {
-                var obj = await _appDbContext.Users.ToListAsync();
-                return obj;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var obj = await _appDbContext.Users.ToListAsync();
+            return obj;
         }
 
-        public async Task<UserDbModel> GetByIdAsync(int Id)
+        public async Task<UserDbModel> GetByIdAsync(int id)
         {
-            try
+            var obj = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            return obj;
+        }
+
+        public async Task<UserDbModel> GetByUserNameAsync(string userName)
+        {
+            if (!string.IsNullOrWhiteSpace(userName))
             {
-                if (Id != null)
-                {
-                    var obj = await _appDbContext.Users.FirstOrDefaultAsync(x => x.Id == Id);
-                    return obj;
-                }
-                else
-                {
-                    return null;
-                }
+                var obj = await _appDbContext.Users.FirstOrDefaultAsync(x =>
+                    x.UserName == userName || x.PhoneNumber == userName || x.Email == userName);
+                return obj;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            return null;
         }
 
         public async Task<UserDbModel> UpdateAsync(UserDbModel appuser)
         {
-            try
-            {
-                if (appuser == null)
-                    return null;
-                var obj = _appDbContext.Update<UserDbModel>(appuser);
-                await _appDbContext.SaveChangesAsync();
-                return obj.Entity;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (appuser == null)
+                return null;
+            var obj = _appDbContext.Update<UserDbModel>(appuser);
+            await _appDbContext.SaveChangesAsync();
+            return obj.Entity;
         }
     }
 }

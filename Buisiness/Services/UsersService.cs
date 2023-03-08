@@ -15,70 +15,40 @@ namespace Business.Services
         //Create Method
         public async Task<User> AddAsync(User user)
         {
-            try
-            {
-                return (await _usersDal.CreateAsync(user.Map())).Map();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return (await _usersDal.CreateAsync(user.Map())).Map();
         }
 
         public async Task DeleteAsync(int Id)
         {
-            try
-            {
-                if (Id == 0)
-                    return;
+            if (Id == 0)
+                return;
 
-                var obj = await _usersDal.GetByIdAsync(Id);
-                if (obj != null)
-                    await _usersDal.DeleteAsync(obj);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var obj = await _usersDal.GetByIdAsync(Id);
+            if (obj != null)
+                await _usersDal.DeleteAsync(obj);
         }
 
         public async Task<User> UpdateUser(User user)
         {
-            try
-            {
-                if (user.Id == 0)
-                    return await AddAsync(user);
+            if (user.Id == 0)
+                return await AddAsync(user);
 
-                return (await _usersDal.UpdateAsync(user.Map())).Map();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return (await _usersDal.UpdateAsync(user.Map())).Map();
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            try
-            {
-                return (await _usersDal.GetAllAsync()).Select(item => item.Map()).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return (await _usersDal.GetAllAsync()).Select(item => item.Map()).ToList();
         }
 
         public async Task<User> GetByIdAsync(int id)
         {
-            try
-            {
-                return (await _usersDal.GetByIdAsync(id)).Map();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return (await _usersDal.GetByIdAsync(id)).Map();
+        }
+
+        public async Task<User> GetByUserNameAsync(string userName)
+        {
+            return (await _usersDal.GetByUserNameAsync(userName)).Map();
         }
     }
 }

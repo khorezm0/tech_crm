@@ -4,7 +4,7 @@ namespace Authentication.Core;
 
 public interface IAuthenticationService
 {
-     Task<TokenResponse> CreateAccessTokenAsync(int userId, string password);
-     Task<TokenResponse> RefreshTokenAsync(string refreshToken, int userId);
-     void RevokeRefreshToken(string refreshToken, int userId);
+     TokenResponse CreateAccessTokenAsync(User user, string password);
+     TokenResponse RefreshTokenAsync(User user, string refreshToken);
+     void RevokeRefreshToken(User user, string refreshToken);
 }

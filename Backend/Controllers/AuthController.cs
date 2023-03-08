@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Authentication.Core;
 using Backend.ClientData.Auth;
 using Backend.ClientData.Commons;
 using Backend.ClientData.Users;
@@ -19,28 +20,26 @@ namespace Backend.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly UsersService _usersService;
+        private readonly IAuthenticationService _authenticationService;
+
         
         public AuthController(
             UsersService usersService,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IAuthenticationService authenticationService
         )
         {
             _configuration = configuration;
             _usersService = usersService;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost("Register")]
-        public async Task<ApiResponse<UserDto>> Register([FromBody] RegisterPostRequest registerPostRequest)
+        [ProducesResponseType(typeof(ApiBaseResponse<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Register([FromBody] RegisterPostRequest registerPostRequest)
         {
             registerPostRequest.Login = registerPostRequest.Login.Trim();
-            
-            var isExist = await _usersService.FindByNameAsync(registerPostRequest.Login);
-            if (isExist != null)
-                return new ApiResponse<UserDto>
-                {
-                    Status = DefaultResponseStatus.BadRequest,
-                    Message = "User already exists!"
-                };
 
             var user = new User
             {
@@ -56,108 +55,46 @@ namespace Backend.Controllers
             var result = await _usersService.AddAsync(user);
             if (result == null)
             {
-                return new ApiResponse<UserDto>
+                return new ApiDataResult(new ApiResponse
                 {
-                    Status = DefaultResponseStatus.Fail,
-                    Message = "Unknown exception occured!"
-                };
+                    Message = "Unknown exception occured!",
+                }, StatusCodes.Status400BadRequest);
             }
             
-            return new ApiResponse<UserDto>
+            return new ApiDataResult(new ApiBaseResponse<UserDto>
             {
-                Status = DefaultResponseStatus.Ok,
                 Message = "User created successfully!"
-            };
+            });
         }
 
         [HttpPost("Login")]
-        public async Task<ApiResponse<AuthorizationDto>> Login([FromBody] LoginPostRequest loginPostRequest)
+        [ProducesResponseType(typeof(ApiBaseResponse<AuthorizationDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Login([FromBody] LoginPostRequest request)
         {
-            //TODO: create JWT
-            var user = await userManager.FindByNameAsync(loginPostRequest.UserName);
-            if (user == null || !await userManager.CheckPasswordAsync(user, loginPostRequest.Password))
-                return new ApiResponse<AuthorizationDto> { Status = DefaultResponseStatus.Fail };
-
-            var userRoles = await userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
+            var user = await _usersService.GetByUserNameAsync(request.UserName.Trim());
+            if (user == null)
             {
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-            var identity = new ClaimsIdentity
+                return new ApiDataResult(new ApiResponse("User not found"), StatusCodes.Status401Unauthorized);
+            }
+            
+            var tokenInfo = _authenticationService
+                .CreateAccessTokenAsync(user.Map(), request.Password);
+            if (!tokenInfo.Success || tokenInfo.Token == null)
             {
-            };
-
-            identity.AddClaims(authClaims.Concat(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole))));
-
-            var authSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
-            );
-
-            var token = new JwtSecurityToken(
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(
-                    authSigningKey,
-                    SecurityAlgorithms.HmacSha256
-                )
-            );
-
-            return new ApiResponse<AuthorizationDto>
+                return new ApiDataResult(new ApiResponse(tokenInfo.Message), StatusCodes.Status401Unauthorized);
+            }
+            
+            return new ApiDataResult(new ApiBaseResponse<AuthorizationDto>
             {
-                Status = DefaultResponseStatus.Ok,
                 Data = new AuthorizationDto
                 {
-                    ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
-                    Expiration = token.ValidTo,
+                    ApiKey = tokenInfo.Token.Token,
+                    Expiration = tokenInfo.Token.Expiration,
                     User = UserDto.Map(user),
-                    Role = userRoles.FirstOrDefault() ?? string.Empty,
+                    Role = user.Roles.FirstOrDefault()?.ToString() ?? string.Empty,
                 }
-            };
-        }
-
-        [HttpPost("Telegram")]
-        public async Task<ApiResponse<AuthorizationDto>> TelegramLogin([FromQuery] TelegramAuthGetRequest request)
-        {
-            var user = await userManager.FindByIdAsync(request.UserId);
-            if (user == null || !await userManager.CheckPasswordAsync(user, loginPostRequest.Password))
-                return new ApiResponse<AuthorizationDto> { Status = DefaultResponseStatus.Fail };
-
-            var userRoles = await userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-            authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
-
-            var authSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["JsonWebTokenKeys:IssuerSigningKey"])
-            );
-
-            var token = new JwtSecurityToken(
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(
-                    authSigningKey,
-                    SecurityAlgorithms.HmacSha256
-                )
-            );
-
-            return new ApiResponse<AuthorizationDto>
-            {
-                Status = DefaultResponseStatus.Ok,
-                Data = new AuthorizationDto
-                {
-                    ApiKey = new JwtSecurityTokenHandler().WriteToken(token),
-                    Expiration = token.ValidTo,
-                    User = UserDto.Map(user),
-                    Role = userRoles.FirstOrDefault() ?? string.Empty,
-                }
-            };
+            });
         }
     }
 }

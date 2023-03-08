@@ -1,5 +1,3 @@
-using Business.Abstractions;
-
 namespace Authentication.Models.Authentication;
 public class CreateUserResponse : BaseResponse
 {

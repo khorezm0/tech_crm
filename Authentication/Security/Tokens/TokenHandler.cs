@@ -1,11 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-
 using Microsoft.Extensions.Options;
 
 using Authentication.Core.Security.Hashing;
+using Authentication.Models.Authentication;
 using Authentication.Models.Tokens;
-using Business.Abstractions;
 
 namespace Authentication.Security.Tokens;
 
@@ -41,15 +40,15 @@ public class TokenHandler : ITokenHandler
         return accessToken;
     }
 
-    public RefreshToken TakeRefreshToken(string token, int userId)
+    public RefreshToken? TakeRefreshToken(User user, string token)
     {
-        if (userId <= 0)
+        if (user.Id <= 0)
         {
             return null;
         }
 
         var refreshTokenWithEmail =
-            _refreshTokens.SingleOrDefault(t => t.RefreshToken.Token == token && t.UserId == userId);
+            _refreshTokens.SingleOrDefault(t => t.RefreshToken.Token == token && t.UserId == user.Id);
 
         if (refreshTokenWithEmail == null)
         {
@@ -61,9 +60,9 @@ public class TokenHandler : ITokenHandler
         return refreshTokenWithEmail.RefreshToken;
     }
 
-    public void RevokeRefreshToken(string token, int userId)
+    public void RevokeRefreshToken(User user, string token)
     {
-        TakeRefreshToken(token, userId);
+        TakeRefreshToken(user, token);
     }
 
     private RefreshToken BuildRefreshToken()
@@ -71,7 +70,7 @@ public class TokenHandler : ITokenHandler
         var refreshToken = new RefreshToken
         (
             token: _passwordHasher.HashPassword(Guid.NewGuid().ToString()),
-            expiration: DateTime.UtcNow.AddSeconds(_tokenOptions.RefreshTokenExpiration).Ticks
+            expiration: DateTime.UtcNow.AddSeconds(_tokenOptions.RefreshTokenExpiration)
         );
 
         return refreshToken;
@@ -94,22 +93,18 @@ public class TokenHandler : ITokenHandler
         var handler = new JwtSecurityTokenHandler();
         var accessToken = handler.WriteToken(securityToken);
 
-        return new AccessToken(accessToken, accessTokenExpiration.Ticks, refreshToken);
+        return new AccessToken(accessToken, accessTokenExpiration, refreshToken);
     }
 
     private IEnumerable<Claim> GetClaims(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
         };
 
-        if (user.Roles != null)
-        {
-            claims.AddRange(user.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())));
-        }
-
+        claims.AddRange(user.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())));
         return claims;
     }
 }
