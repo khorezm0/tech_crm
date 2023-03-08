@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Business.Services;
 using Authentication.Extensions;
 using DAL.Users;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddSingleton<UsersService>();
 builder.Services.AddControllers();
 builder.Services.AddCustomSwagger()
     .AddIdentityServices(builder.Configuration);
+// NLog: Setup NLog for Dependency injection
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
