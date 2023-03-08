@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Authentication.Core.Security.Hashing;
 using Authentication.Models.Authentication;
+using Authentication.Security.Hashing;
 using Authentication.Security.Tokens;
 
 namespace Authentication.Core;
@@ -57,9 +57,11 @@ public class AuthenticationService : IAuthenticationService
         _tokenHandler.RevokeRefreshToken(user, refreshToken);
     }
 
-    public int GetClaimsUserId(ClaimsPrincipal user)
+    public int? GetClaimsUserId(ClaimsPrincipal user)
     {
-        var claim = user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-        return int.Parse(claim.Value);
+        var claim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+        return claim == null
+            ? null
+            : int.Parse(claim.Value);
     }
 }

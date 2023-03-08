@@ -1,6 +1,5 @@
 ﻿using DAL.Data;
 using DAL.Models;
-using Dapper;
 using Microsoft.Extensions.Logging;
 
 namespace DAL.Users
@@ -10,7 +9,7 @@ namespace DAL.Users
         private readonly IDbConnectionFactory _dbConnectionFactory;
         private readonly ILogger _logger;
 
-        public UsersDal(IDbConnectionFactory dbConnectionFactory, ILogger logger)
+        public UsersDal(IDbConnectionFactory dbConnectionFactory, ILogger<UsersDal> logger)
         : base(dbConnectionFactory)
         {
             _dbConnectionFactory = dbConnectionFactory;

@@ -14,7 +14,7 @@ public static class AuthUserMapper
                 {
                     Id = user.Id,
                     PasswordHash = user.PasswordHash,
-                    Roles = user.Roles.Select(i => i.ToString()).ToArray()
+                    Roles = user.Roles?.Select(i => i.ToString()).ToArray()
                 };
     }
 

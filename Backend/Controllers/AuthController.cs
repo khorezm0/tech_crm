@@ -84,7 +84,7 @@ namespace Backend.Controllers
                     ApiKey = tokenInfo.Token.Token,
                     Expiration = tokenInfo.Token.Expiration,
                     User = UserDto.Map(user),
-                    Role = user.Roles.FirstOrDefault()?.ToString() ?? string.Empty,
+                    Role = user.Roles?.FirstOrDefault()?.ToString() ?? string.Empty,
                 }
             });
         }

@@ -27,17 +27,22 @@ public class UserContextMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         UserInfoContext outsourceInfoContext = null;
-
+        
         try
         {
-            outsourceInfoContext = new UserInfoContext
+            var userId = _authenticationService.GetClaimsUserId(httpContext.User);
+            if (userId != null)
             {
-                Id = _authenticationService.GetClaimsUserId(httpContext.User)
-            };
+                outsourceInfoContext = new UserInfoContext
+                {
+                    Id = userId.Value 
+                };   
+            }
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, ex.Message);
+            await _next(httpContext);
             return;
         }
 

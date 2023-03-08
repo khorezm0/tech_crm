@@ -1,5 +1,4 @@
 ﻿using Authentication.Core;
-using Authentication.Core.Security.Hashing;
 using Authentication.Security.Hashing;
 using Authentication.Security.Tokens;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +13,9 @@ public static class MvcJwtExtenstion
     
         services.AddSingleton<ITokenHandler, TokenHandler>();
     
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddSingleton<IUserContextAccessor, UserContextAccessor>();
 
-        services.AddScoped<IUserContextAccessor, UserContextAccessor>();
+        services.AddSingleton<IAuthenticationService, AuthenticationService>();
     
         return services;
     }

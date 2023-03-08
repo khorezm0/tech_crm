@@ -1,4 +1,4 @@
-namespace Authentication.Core.Security.Hashing;
+namespace Authentication.Security.Hashing;
 public interface IPasswordHasher
 {
     string HashPassword(string password);

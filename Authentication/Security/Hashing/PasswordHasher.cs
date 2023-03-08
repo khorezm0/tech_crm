@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using Authentication.Core.Security.Hashing;
 
 namespace Authentication.Security.Hashing;
 

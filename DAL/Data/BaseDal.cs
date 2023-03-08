@@ -16,12 +16,13 @@ public abstract class BaseDal
     protected async Task<string> LoadScriptFile(string fileName)
     {
         var fullName = GetType().FullName;
+        var dirPath = Directory.GetParent(GetType().Assembly.Location)?.FullName;
         if (fullName == null) return fileName;
         
-        var fullPath = string.Join(".", fullName.Split(".").Skip(1));
+        var fullPath = Path.Combine(dirPath, string.Join(".", fullName.Split(".").Skip(1).SkipLast(1)), "Scripts", fileName);
         if (!File.Exists(fullPath))
         {
-            return fileName;
+            throw new ArgumentException("File is not exists: " + fullPath);
         }
 
         return await File.ReadAllTextAsync(fullPath);

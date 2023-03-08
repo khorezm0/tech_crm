@@ -15,7 +15,8 @@ builder.Services.AddSingleton<UsersDal>(); //TODO: interfaces
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddControllers();
 builder.Services.AddCustomSwagger()
-    .AddIdentityServices(builder.Configuration);
+    .AddIdentityServices(builder.Configuration)
+    .AddJwt();
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();

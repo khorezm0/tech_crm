@@ -1,10 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
-
-using Authentication.Core.Security.Hashing;
 using Authentication.Models.Authentication;
 using Authentication.Models.Tokens;
+using Authentication.Security.Hashing;
 
 namespace Authentication.Security.Tokens;
 
@@ -102,9 +101,13 @@ public class TokenHandler : ITokenHandler
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Id.ToString()),
         };
 
-        claims.AddRange(user.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())));
+        if (user.Roles != null)
+        {
+            claims.AddRange(user.Roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.ToString())));
+        }
         return claims;
     }
 }
