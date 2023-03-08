@@ -15,6 +15,8 @@ public static class MvcJwtExtenstion
         services.AddSingleton<ITokenHandler, TokenHandler>();
     
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        services.AddScoped<IUserContextAccessor, UserContextAccessor>();
     
         return services;
     }

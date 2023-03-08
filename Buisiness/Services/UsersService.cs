@@ -1,13 +1,13 @@
 ﻿using Business.Abstractions;
-using DAL.Repositories;
+using DAL.Users;
 
 namespace Business.Services
 {
     public class UsersService
     {
-        private readonly UsersRepository _usersDal;
+        private readonly UsersDal _usersDal;
 
-        public UsersService(UsersRepository usersDal)
+        public UsersService(UsersDal usersDal)
         {
             _usersDal = usersDal;
         }
@@ -15,7 +15,7 @@ namespace Business.Services
         //Create Method
         public async Task<User> AddAsync(User user)
         {
-            return (await _usersDal.CreateAsync(user.Map())).Map();
+            return (await _usersDal.InsertAsync(user.Map())).Map();
         }
 
         public async Task DeleteAsync(int Id)
@@ -34,11 +34,6 @@ namespace Business.Services
                 return await AddAsync(user);
 
             return (await _usersDal.UpdateAsync(user.Map())).Map();
-        }
-
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            return (await _usersDal.GetAllAsync()).Select(item => item.Map()).ToList();
         }
 
         public async Task<User> GetByIdAsync(int id)

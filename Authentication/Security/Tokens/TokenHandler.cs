@@ -40,7 +40,7 @@ public class TokenHandler : ITokenHandler
         return accessToken;
     }
 
-    public RefreshToken? TakeRefreshToken(User user, string token)
+    public RefreshToken TakeRefreshToken(User user, string token)
     {
         if (user.Id <= 0)
         {

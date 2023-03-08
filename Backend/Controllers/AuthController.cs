@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using Microsoft.AspNetCore.Mvc;
 using Authentication.Core;
 using Backend.ClientData.Auth;
 using Backend.ClientData.Commons;
@@ -18,18 +13,15 @@ namespace Backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly UsersService _usersService;
         private readonly IAuthenticationService _authenticationService;
 
         
         public AuthController(
             UsersService usersService,
-            IConfiguration configuration,
             IAuthenticationService authenticationService
         )
         {
-            _configuration = configuration;
             _usersService = usersService;
             _authenticationService = authenticationService;
         }
@@ -96,5 +88,30 @@ namespace Backend.Controllers
                 }
             });
         }
+        
+        //
+        // [HttpPost("token/refresh")]
+        // public async Task<IActionResult> RefreshTokenAsync(
+        //     [FromBody] RefreshTokenResource refreshTokenResource)
+        // {
+        //     var response = await _authenticationService
+        //         .RefreshTokenAsync(refreshTokenResource.Token, refreshTokenResource.UserEmail);
+        //
+        //     if (!response.Success)
+        //     {
+        //         return BadRequest(response.Message);
+        //     }
+        //
+        //     var tokenResource = _mapper.Map<AccessToken, AccessTokenResource>(response.Token);
+        //
+        //     return Ok(tokenResource);
+        // }
+        //
+        // [HttpPost("token/revoke")]
+        // public IActionResult RevokeToken([FromBody] RevokeTokenResource resource)
+        // {
+        //     _authenticationService.RevokeRefreshToken(resource.Token, resource.Email);
+        //     return NoContent();
+        // }
     }
 }
