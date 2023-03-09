@@ -9,7 +9,7 @@ Frontend application is going to be on Vue.js (soon)
 
 # Installation
 1. Clone repo
-2. Edit both appSettings.json with your own connecionStrings.
+2. Edit both `appSettings.json`'s with your own connecionStrings.
 3. Run
 
 # Entity addition
