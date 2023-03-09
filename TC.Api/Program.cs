@@ -1,11 +1,11 @@
 using NLog.Web;
-using TC.AspNetCore.DependencyInjection;
+using TC.Api.DependencyInjection;
 using TC.AspNetCore.Configurations;
 using TC.Auth.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterByDiAttribute("TC.*");
+builder.Services.RegisterDefaultSingletons();
 builder.Services.AddControllers();
 builder.Services.AddCustomSwagger()
     .AddIdentityServices(builder.Configuration)
