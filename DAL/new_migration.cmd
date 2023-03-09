@@ -1,1 +1,0 @@
-dotnet ef database update --startup-project ..\Backend\Backend.csproj --context DAL.Data.AppDbContext --configuration Debug --framework net6.0 "%date% %time%"

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <PackageId>TC.Business</PackageId>
+  </PropertyGroup>
+	<ItemGroup>
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\TC.AspNetCore\TC.AspNetCore.csproj" />
+    <ProjectReference Include="..\TC.Business.Abstractions\TC.Business.Abstractions.csproj" />
+    <ProjectReference Include="..\TC.DAL.Abstractions\TC.DAL.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
