@@ -1,8 +1,15 @@
 INSERT INTO tc_user
-(created_time, deleted_time, user_name, phone_number, phone_number_confirmed, email,
- email_confirmed, password_hash, first_name, last_name)
-VALUES (:CreatedTime, :DeletedTime, :UserName, :PhoneNumber, :PhoneNumberConfirmed, :Email, :EmailConfirmed,
-        :PasswordHash, :FirstName, :LastName)
+(created_time,
+ user_name,
+ phone_number,
+ phone_number_confirmed,
+ email,
+ email_confirmed,
+ password_hash,
+ first_name,
+ last_name)
+VALUES (:CreatedTime, :UserName, :PhoneNumber, :PhoneNumberConfirmed, :Email, :EmailConfirmed,
+        :PasswordHash, :FirstName, :LastName, :TelegramId, :OneTimeLinkPassword)
 returning id as Id,
     created_time as CreatedTime,
     deleted_time as DeletedTime,
@@ -13,5 +20,6 @@ returning id as Id,
     email_confirmed as EmailConfirmed,
     password_hash as PasswordHash,
     first_name as FirstName,
-    last_name as LastName
+    last_name as LastName,
+    modified_time as ModifiedTime
 ;

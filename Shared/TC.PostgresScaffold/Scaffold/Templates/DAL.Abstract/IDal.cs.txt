@@ -1,0 +1,18 @@
+﻿using TC.Common.Models;
+using TC.DAL.Abstractions.{{PluralName}}.Models;
+
+namespace TC.DAL.Abstractions.{{PluralName}}
+{
+    public interface I{{PluralName}}Dal
+    {
+        Task<{{SingleName}}DbModel> InsertAsync({{SingleName}}DbModel model, CancellationToken cancellationToken);
+        
+        Task<int> DeleteAsync({{SingleName}}DbModel model, CancellationToken cancellationToken);
+        
+        Task<{{SingleName}}DbModel> GetByIdAsync(int id, CancellationToken cancellationToken);
+        
+        Task<{{SingleName}}DbModel> UpdateAsync({{SingleName}}DbModel model, CancellationToken cancellationToken);
+        
+        Task<FilterResult<{{SingleName}}DbModel>> GetByFilterAsync({{SingleName}}DbFilterModel model, CancellationToken cancellationToken);
+    }
+}

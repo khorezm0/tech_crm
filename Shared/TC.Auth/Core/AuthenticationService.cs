@@ -18,7 +18,7 @@ public class AuthenticationService : IAuthenticationService
         _passwordHasher = passwordHasher;
     }
 
-    public TokenResponse CreateAccessTokenAsync(User user, string password)
+    public TokenResponse CreateAccessToken(User user, string password)
     {
         if (user.Id <= 0 || !_passwordHasher.PasswordMatches(password, user.PasswordHash))
         {
@@ -29,7 +29,7 @@ public class AuthenticationService : IAuthenticationService
         return new TokenResponse(true, null, token);
     }
 
-    public TokenResponse RefreshTokenAsync(User user, string refreshToken)
+    public TokenResponse RefreshToken(User user, string refreshToken)
     {
         var token = _tokenHandler.TakeRefreshToken(user, refreshToken);
         if (token == null)

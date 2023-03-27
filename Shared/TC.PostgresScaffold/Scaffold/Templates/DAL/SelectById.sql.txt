@@ -1,0 +1,6 @@
+select 
+{{SqlMapping}}
+from {{TableName}}
+WHERE id = :Id and
+    deleted_time is null
+;

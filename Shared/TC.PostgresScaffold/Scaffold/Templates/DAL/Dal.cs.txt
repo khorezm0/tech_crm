@@ -1,0 +1,70 @@
+﻿using Microsoft.Extensions.Logging;
+using TC.Common.Models;
+using TC.DAL.Abstractions.Data;
+using TC.DAL.Abstractions.{{PluralName}};
+using TC.DAL.Abstractions.{{PluralName}}.Models;
+using TC.DAL.Data;
+
+namespace TC.DAL.{{PluralName}}
+{
+    public class {{PluralName}}Dal : BaseDal, I{{PluralName}}Dal
+    {
+        private readonly IDbConnectionFactory _dbConnectionFactory;
+        private readonly ILogger _logger;
+
+        public {{PluralName}}Dal(IDbConnectionFactory dbConnectionFactory, ILogger<{{PluralName}}Dal> logger)
+        : base(dbConnectionFactory)
+        {
+            _dbConnectionFactory = dbConnectionFactory;
+            _logger = logger;
+        }
+
+        public Task<{{SingleName}}DbModel> InsertAsync({{SingleName}}DbModel model, CancellationToken cancellationToken)
+        {
+            var queryObject = new {
+                {{Mappings}}
+            };
+            return FirstOrDefaultAsync<{{SingleName}}DbModel>(Scripts.Insert, queryObject, cancellationToken, true);
+        }
+
+        public Task <int>DeleteAsync({{SingleName}}DbModel model, CancellationToken cancellationToken)
+        {
+            var queryObject = new {
+                model.Id
+            };
+            return FirstOrDefaultAsync<int>(Scripts.Delete, queryObject, cancellationToken);
+        }
+
+        public Task<{{SingleName}}DbModel> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var queryObject = new {
+                Id = id
+            };
+            
+            return FirstOrDefaultAsync<{{SingleName}}DbModel>(Scripts.SelectById, queryObject, cancellationToken);
+        }
+
+        public Task<{{SingleName}}DbModel> UpdateAsync({{SingleName}}DbModel model, CancellationToken cancellationToken)
+        {
+            var queryObject = new {
+                {{Mappings}}
+            };
+            return FirstOrDefaultAsync<{{SingleName}}DbModel>(Scripts.Update, queryObject, cancellationToken, true);
+        }
+
+        public async Task<FilterResult<{{SingleName}}DbModel>> GetByFilterAsync({{SingleName}}DbFilterModel model, CancellationToken cancellationToken)
+        {
+            var queryObject = new
+            {
+                model.Limit,
+                model.Offset,
+            };
+
+            var objects = QueryAsync<{{SingleName}}DbModel>(Scripts.SelectByFilter, queryObject, cancellationToken, true);
+            var totalCount = FirstOrDefaultAsync<long>(Scripts.CountByFilter, queryObject, cancellationToken, true);
+            await Task.WhenAll(objects, totalCount);
+            
+            return new FilterResult<{{SingleName}}DbModel>(objects.Result, totalCount.Result, model.Offset, objects.Result.Count);
+        }
+    }
+}

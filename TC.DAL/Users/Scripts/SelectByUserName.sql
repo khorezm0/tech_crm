@@ -8,7 +8,8 @@ select id                     as Id,
        email_confirmed        as EmailConfirmed,
        password_hash          as PasswordHash,
        first_name             as FirstName,
-       last_name              as LastName
+       last_name              as LastName,
+       modified_time          as ModifiedTime
 from tc_user
 WHERE user_name = :UserName
    or email = :UserName

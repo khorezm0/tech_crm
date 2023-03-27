@@ -1,0 +1,18 @@
+﻿using TC.Common.Models;
+using TC.Business.Abstractions.{{PluralName}}.Models;
+
+namespace TC.Business.Abstractions.{{PluralName}}
+{
+    public interface I{{PluralName}}Service
+    {
+        Task<{{SingleName}}Model> AddAsync({{SingleName}}Model model, CancellationToken cancellationToken);
+
+        Task<int> DeleteAsync(int id, CancellationToken cancellationToken);
+
+        Task<{{SingleName}}Model> UpdateAsync({{SingleName}}Model model, CancellationToken cancellationToken);
+
+        Task<{{SingleName}}Model> GetByIdAsync(int id, CancellationToken cancellationToken);
+
+        Task<FilterResult<{{SingleName}}Model>> GetByFilterAsync({{SingleName}}FilterModel model, CancellationToken cancellationToken);
+    }
+}

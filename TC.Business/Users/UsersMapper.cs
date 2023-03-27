@@ -44,4 +44,16 @@ public static class UsersMapper
                 DeletedTime = userDbModel.DeletedTime
             };
     }
+
+    internal static UserDbFilterModel Map(this UserFilterModel model)
+    {
+        return model == null
+            ? null
+            : new UserDbFilterModel
+            {
+                Limit = model.Limit,
+                Offset = model.Offset,
+                UserIds = model.UserIds
+            };
+    }
 }

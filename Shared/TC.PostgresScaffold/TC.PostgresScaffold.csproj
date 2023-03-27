@@ -1,0 +1,94 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.0.123" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+      <PackageReference Include="Npgsql" Version="6.0.9" />
+      <PackageReference Include="Pluralize.NET" Version="1.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="appSettings.json" />
+      <Content Include="appSettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\Business.Abstract\Model.cs.txt" />
+      <Content Include="Scaffold\Templates\Business.Abstract\Model.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\DAL.Abstract\FilterModel.cs.txt" />
+      <Content Include="Scaffold\Templates\DAL.Abstract\FilterModel.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\Business\Mapper.cs.txt" />
+      <Content Include="Scaffold\Templates\Business\Mapper.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\Business.Abstract\IService.cs.txt" />
+      <Content Include="Scaffold\Templates\Business.Abstract\IService.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\Business\Service.cs.txt" />
+      <Content Include="Scaffold\Templates\Business\Service.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\Business.Abstract\FilterModel.cs.txt" />
+      <Content Include="Scaffold\Templates\Business.Abstract\FilterModel.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\DAL\Dal.cs.txt" />
+      <Content Include="Scaffold\Templates\DAL\Dal.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\DAL.Abstract\DbModel.cs.txt" />
+      <Content Include="Scaffold\Templates\DAL.Abstract\DbModel.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\DAL.Abstract\IDal.cs.txt" />
+      <Content Include="Scaffold\Templates\DAL.Abstract\IDal.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Scaffold\Templates\DAL\Scripts.cs.txt" />
+      <Content Include="Scaffold\Templates\DAL\Scripts.cs.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Scaffold\Templates\DAL\Delete.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Scaffold\Templates\DAL\Insert.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Scaffold\Templates\DAL\Update.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Scaffold\Templates\DAL\CountByFilter.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Scaffold\Templates\DAL\SelectByFilter.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Scaffold\Templates\DAL\SelectById.sql.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+</Project>

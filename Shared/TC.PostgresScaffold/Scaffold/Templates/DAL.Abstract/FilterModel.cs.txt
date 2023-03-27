@@ -1,0 +1,7 @@
+﻿namespace TC.DAL.Abstractions.{{PluralName}}.Models;
+
+public record {{SingleName}}DbFilterModel
+{
+    public long Limit { get; set; } = 100;
+    public long Offset { get; set; }
+}

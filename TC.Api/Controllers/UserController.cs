@@ -33,7 +33,7 @@ public class UserController : ControllerBase
         var user = await _usersService.GetByIdAsync(userId);
         return new ApiDataResult(new ApiBaseResponse<UserDto>()
         {
-            Data = user.MapToDto()
+            Data = user.Map()
         });
     }
 }

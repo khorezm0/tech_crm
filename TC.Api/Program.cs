@@ -1,31 +1,53 @@
-using NLog.Web;
+using System.Text.Json.Serialization;
 using TC.Api.DependencyInjection;
 using TC.AspNetCore.Configurations;
+using TC.AspNetCore.Filters;
 using TC.Auth.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
-builder.Services.RegisterDefaultSingletons();
-builder.Services.AddControllers();
+builder.Services.AddRouting()
+    .AddControllers(options => options.Filters.Add<InputValidationActionFilter>())
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
 builder.Services.AddCustomSwagger()
+    .RegisterDefaultSingletons()
     .AddIdentityServices(builder.Configuration)
     .AddJwt()
     .ConfigureTcOptions(builder.Configuration);
 
-// NLog: Setup NLog for Dependency injection
-builder.Logging.ClearProviders();
-builder.Host.UseNLog();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(corsBuilder =>
+    {
+        corsBuilder.SetIsOriginAllowed((host) => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            // .AllowAnyOrigin()
+            .AllowCredentials();
+    });
+});
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseCustomSwagger();
+    app.UseDeveloperExceptionPage();
 }
 
+// Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+app.UseCors();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<UserContextMiddleware>();
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints
+        // .AddHubs() // SignalR
+        .MapControllers();
+});
 app.Run();

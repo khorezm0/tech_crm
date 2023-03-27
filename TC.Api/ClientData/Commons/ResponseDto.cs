@@ -6,7 +6,7 @@ namespace TC.Api.ClientData.Commons
     [DataContract]
     public class ApiBaseResponse<TData>
     {
-        public string? Message { get; set; }
+        public string Message { get; set; }
 
         public TData Data { get; set; }
     }

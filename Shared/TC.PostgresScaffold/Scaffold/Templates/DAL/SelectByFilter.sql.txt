@@ -1,0 +1,8 @@
+select {{SqlMapping}}
+from {{TableName}}
+WHERE deleted_time is null
+-- and OTHER FILTERS
+ORDER BY id
+LIMIT :Limit
+OFFSET :Offset
+;

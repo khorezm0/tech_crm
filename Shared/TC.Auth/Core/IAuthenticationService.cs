@@ -5,8 +5,8 @@ namespace TC.Auth.Core;
 
 public interface IAuthenticationService
 {
-     TokenResponse CreateAccessTokenAsync(User user, string password);
-     TokenResponse RefreshTokenAsync(User user, string refreshToken);
+     TokenResponse CreateAccessToken(User user, string password);
+     TokenResponse RefreshToken(User user, string refreshToken);
      void RevokeRefreshToken(User user, string refreshToken);
      int? GetClaimsUserId(ClaimsPrincipal user);
 }

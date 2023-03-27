@@ -1,0 +1,38 @@
+﻿using TC.Business.Abstractions.{{PluralName}}.Models;
+using TC.DAL.Abstractions.{{PluralName}}.Models;
+
+namespace TC.Business.{{PluralName}}.Mappers;
+
+public static class {{PluralName}}Mapper
+{
+    internal static {{SingleName}}DbModel Map(this {{SingleName}}Model model)
+    {
+        return model == null
+            ? null
+            : new {{SingleName}}DbModel
+            {
+                {{Mappings}}
+            };
+    }
+
+    internal static {{SingleName}}Model Map(this {{SingleName}}DbModel model)
+    {
+        return model == null
+            ? null
+            : new {{SingleName}}Model
+            {
+                {{Mappings}}
+            };
+    }
+    
+    internal static {{SingleName}}DbFilterModel Map(this {{SingleName}}FilterModel model)
+    {
+        return model == null
+            ? null
+            : new {{SingleName}}DbFilterModel
+            {
+                Limit = model.Limit,
+                Offset = model.Offset
+            };
+    }
+}

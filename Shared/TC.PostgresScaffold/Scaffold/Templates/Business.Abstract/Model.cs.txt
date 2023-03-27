@@ -1,0 +1,7 @@
+﻿{{Usings}}
+namespace TC.Business.Abstractions.{{PluralName}}.Models;
+
+public record {{SingleName}}Model
+{
+    {{Properties}}
+}

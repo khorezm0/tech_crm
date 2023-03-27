@@ -1,0 +1,7 @@
+UPDATE {{TableName}} 
+SET
+{{SqlUpdateMapping}}
+WHERE id = :Id
+returning
+{{SqlMapping}}
+;

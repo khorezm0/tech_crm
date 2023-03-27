@@ -1,4 +1,5 @@
 ﻿using TC.Business.Abstractions.Users.Models;
+using TC.Common.Models;
 
 namespace TC.Business.Abstractions.Users
 {
@@ -6,12 +7,14 @@ namespace TC.Business.Abstractions.Users
     {
         Task<User> AddAsync(User user);
 
-        Task DeleteAsync(int id);
+        Task<int> DeleteAsync(int id);
 
-        Task<User> UpdateUser(User user);
+        Task<User> UpdateAsync(User user);
 
         Task<User> GetByIdAsync(int id);
 
         Task<User> GetByUserNameAsync(string userName);
+        
+        Task<FilterResult<User>> GetByFilterAsync(UserFilterModel filter);
     }
 }

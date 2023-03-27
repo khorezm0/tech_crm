@@ -1,0 +1,7 @@
+﻿{{Usings}}
+namespace TC.DAL.Abstractions.{{PluralName}}.Models;
+
+public record {{SingleName}}DbModel
+{
+    {{Properties}}
+}

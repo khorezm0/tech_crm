@@ -7,7 +7,6 @@ using TC.DAL.Abstractions.Data;
 
 namespace TC.DAL.Data
 {
-    [InjectAsSingleton]
     public class DbConnectionFactory : IDbConnectionFactory
     {
         private readonly string _connectionString;

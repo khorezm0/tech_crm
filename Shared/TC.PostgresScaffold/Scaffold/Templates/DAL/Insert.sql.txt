@@ -1,0 +1,6 @@
+INSERT INTO {{TableName}}
+({{SqlInsertColumns}})
+VALUES ({{SqlInsertParams}})
+returning 
+{{SqlMapping}}
+;

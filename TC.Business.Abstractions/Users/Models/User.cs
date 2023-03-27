@@ -12,7 +12,7 @@ public class User
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime CreatedTime { get; set; }
+    public DateTime ModifiedTime { get; set; }
     public DateTime? DeletedTime { get; set; }
-    
     public Enum[] Roles { get; set; }
 }

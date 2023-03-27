@@ -1,6 +1,4 @@
-﻿using TC.Business.Abstractions.Users.Models;
-
-namespace TC.Api.ClientData.Users;
+﻿namespace TC.Api.ClientData.Users;
 
 #nullable disable
 
@@ -15,20 +13,6 @@ public class UserDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public DateTime CreatedTime { get; set; }
-
-    public static UserDto Map(User user)
-    {
-        return new UserDto
-        {
-            Id = user.Id,
-            UserName = user.UserName,
-            PhoneNumber = user.PhoneNumber,
-            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-            Email = user.Email,
-            EmailConfirmed = user.EmailConfirmed,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            CreatedTime = user.CreatedTime
-        };
-    }
+    public DateTime ModifiedTime { get; set; }
+    public long? TelegramId { get; set; }
 }

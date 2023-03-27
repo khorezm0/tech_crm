@@ -1,11 +1,10 @@
-﻿using TC.Api.ClientData.Users;
-using TC.Auth.Models.Authentication;
+﻿using TC.Auth.Models.Authentication;
 
 namespace TC.Api.ClientData.Auth;
 
 public static class AuthUserMapper
 {
-    public static User Map(this Business.Abstractions.Users.Models.User user)
+    public static User MapToAuthModel(this Business.Abstractions.Users.Models.User user)
     {
         return
             user == null
@@ -17,22 +16,21 @@ public static class AuthUserMapper
                     Roles = user.Roles?.Select(i => i.ToString()).ToArray()
                 };
     }
-
-    public static UserDto MapToDto(this Business.Abstractions.Users.Models.User user)
+    
+    public static Business.Abstractions.Users.Models.User Map(this RegisterPostRequest model, string passwordHash)
     {
-        return user == null
-            ? null
-            : new UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                CreatedTime = user.CreatedTime,
-                EmailConfirmed = user.EmailConfirmed,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                UserName = user.UserName
-            };
+        return
+            model == null
+                ? null
+                : new Business.Abstractions.Users.Models.User
+                {
+                    UserName = model.Login,
+                    PhoneNumber = model.PhoneNumber,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    CreatedTime = DateTime.Now,
+                    PasswordHash = passwordHash
+                };
     }
 }

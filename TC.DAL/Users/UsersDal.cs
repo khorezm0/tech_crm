@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TC.AspNetCore.DependencyInjection;
+using TC.Common.Models;
 using TC.DAL.Abstractions.Data;
 using TC.DAL.Abstractions.Users;
 using TC.DAL.Abstractions.Users.Models;
@@ -7,7 +8,6 @@ using TC.DAL.Data;
 
 namespace TC.DAL.Users
 {
-    [InjectAsSingleton]
     public class UsersDal : BaseDal, IUsersDal
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;
@@ -22,24 +22,28 @@ namespace TC.DAL.Users
 
         public Task<UserDbModel> InsertAsync(UserDbModel user)
         {
-            return 
-                user != null
-                    ? FirstOrDefaultAsync<UserDbModel>(Scripts.Insert, user, CancellationToken.None) 
-                    : null;
+            var queryObject = new
+            {
+                user.UserName,
+                user.Email,
+                user.EmailConfirmed,
+                user.FirstName,
+                user.LastName,
+                user.PasswordHash,
+                user.PhoneNumber,
+                user.PhoneNumberConfirmed,
+                CreatedTime = DateTime.Now
+            };
+            return FirstOrDefaultAsync<UserDbModel>(Scripts.Insert, queryObject, CancellationToken.None);
         }
 
-        public Task DeleteAsync(UserDbModel user)
+        public Task<int> DeleteAsync(UserDbModel user)
         {
-            if (user == null)
-            {
-                return Task.CompletedTask;
-            }
-
             var queryObject = new {
-                Id = user.Id
+                user.Id
             };
             
-            return FirstOrDefaultAsync<UserDbModel>(Scripts.Delete, queryObject, CancellationToken.None);
+            return FirstOrDefaultAsync<int>(Scripts.Delete, queryObject, CancellationToken.None);
         }
 
         public Task<UserDbModel> GetByIdAsync(int id)
@@ -62,7 +66,35 @@ namespace TC.DAL.Users
 
         public Task<UserDbModel> UpdateAsync(UserDbModel user)
         {
-            return FirstOrDefaultAsync<UserDbModel>(Scripts.Update, user, CancellationToken.None);
+            var queryObject = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                user.EmailConfirmed,
+                user.FirstName,
+                user.LastName,
+                user.PasswordHash,
+                user.PhoneNumber,
+                user.PhoneNumberConfirmed,
+                ModifiedTime = DateTime.Now,
+            };
+            return FirstOrDefaultAsync<UserDbModel>(Scripts.Update, queryObject, CancellationToken.None, true);
+        }
+
+        public async Task<FilterResult<UserDbModel>> GetByFilterAsync(UserDbFilterModel model)
+        {
+            var queryObject = new
+            {
+                model.UserIds,
+                model.Limit,
+                model.Offset,
+            };
+
+            var objects = QueryAsync<UserDbModel>(Scripts.SelectByFilter, queryObject, CancellationToken.None, true);
+            var totalCount = FirstOrDefaultAsync<long>(Scripts.CountByFilter, queryObject, CancellationToken.None, true);
+            await Task.WhenAll(objects, totalCount);
+            return new FilterResult<UserDbModel>(objects.Result, totalCount.Result, model.Offset, objects.Result.Count);
         }
     }
 }

@@ -18,7 +18,7 @@ public static class IdentityServiceExtenstion
         var signingConfigurations = new SigningConfigurations(tokenOptions.Secret);
     
         services.AddSingleton(signingConfigurations);
-    
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtBearerOptions =>
             {
@@ -34,6 +34,7 @@ public static class IdentityServiceExtenstion
                     IssuerSigningKey = signingConfigurations.SecurityKey,
                     ClockSkew = TimeSpan.Zero
                 };
+
             });
         
         return services;

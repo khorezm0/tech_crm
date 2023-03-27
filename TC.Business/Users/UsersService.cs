@@ -1,11 +1,11 @@
 ﻿using TC.AspNetCore.DependencyInjection;
 using TC.Business.Abstractions.Users;
 using TC.Business.Abstractions.Users.Models;
+using TC.Common.Models;
 using TC.DAL.Abstractions.Users;
 
 namespace TC.Business.Users
 {
-    [InjectAsSingleton]
     public class UsersService : IUsersService
     {
         private readonly IUsersDal _usersDal;
@@ -15,23 +15,18 @@ namespace TC.Business.Users
             _usersDal = usersDal;
         }
 
-        //Create Method
         public async Task<User> AddAsync(User user)
         {
             return (await _usersDal.InsertAsync(user.Map())).Map();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<int> DeleteAsync(int id)
         {
-            if (id == 0)
-                return;
-
             var obj = await _usersDal.GetByIdAsync(id);
-            if (obj != null)
-                await _usersDal.DeleteAsync(obj);
+            return await _usersDal.DeleteAsync(obj);
         }
 
-        public async Task<User> UpdateUser(User user)
+        public async Task<User> UpdateAsync(User user)
         {
             if (user.Id == 0)
                 return await AddAsync(user);
@@ -47,6 +42,13 @@ namespace TC.Business.Users
         public async Task<User> GetByUserNameAsync(string userName)
         {
             return (await _usersDal.GetByUserNameAsync(userName)).Map();
+        }
+
+        public async Task<FilterResult<User>> GetByFilterAsync(UserFilterModel model)
+        {
+            var res = await _usersDal.GetByFilterAsync(model.Map());
+            return new FilterResult<User>(res.Data.Select(item => item.Map()).ToArray(), res.TotalCount, res.Offset,
+                res.Count);
         }
     }
 }

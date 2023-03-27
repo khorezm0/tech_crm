@@ -1,0 +1,50 @@
+﻿using TC.Business.Abstractions.{{PluralName}};
+using TC.Business.Abstractions.{{PluralName}}.Models;
+using TC.Business.{{PluralName}}.Mappers;
+using TC.Common.Models;
+using TC.DAL.Abstractions.{{PluralName}};
+using TC.DAL.Abstractions.{{PluralName}}.Models;
+
+namespace TC.Business.{{PluralName}}
+{
+    public class {{PluralName}}Service : I{{PluralName}}Service
+    {
+        private readonly I{{PluralName}}Dal _dal;
+
+        public {{PluralName}}Service(I{{PluralName}}Dal dal)
+        {
+            _dal = dal;
+        }
+
+        public async Task<{{SingleName}}Model> AddAsync({{SingleName}}Model model, CancellationToken cancellationToken)
+        {
+            return (await _dal.InsertAsync(model.Map(), cancellationToken)).Map();
+        }
+
+        public async Task<int> DeleteAsync(int id, CancellationToken cancellationToken)
+        {
+            var obj = await _dal.GetByIdAsync(id, cancellationToken);
+            return await _dal.DeleteAsync(obj, cancellationToken);
+        }
+
+        public async Task<{{SingleName}}Model> UpdateAsync({{SingleName}}Model model, CancellationToken cancellationToken)
+        {
+            if (model.Id == 0)
+                return await AddAsync(model, cancellationToken);
+
+            return (await _dal.UpdateAsync(model.Map(), cancellationToken)).Map();
+        }
+
+        public async Task<{{SingleName}}Model> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            return (await _dal.GetByIdAsync(id, cancellationToken)).Map();
+        }
+
+        public async Task<FilterResult<{{SingleName}}Model>> GetByFilterAsync({{SingleName}}FilterModel model, CancellationToken cancellationToken)
+        {
+            var res = await _dal.GetByFilterAsync(model.Map(), cancellationToken);
+            return new FilterResult<{{SingleName}}Model>(res.Data.Select(item => item.Map()).ToArray(), res.TotalCount, res.Offset,
+                res.Count);
+        }
+    }
+}

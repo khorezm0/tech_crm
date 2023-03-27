@@ -3,6 +3,7 @@
 public class AuthorizationDto
 {
     public string ApiKey { get; set; }
+    public string RefreshToken { get; set; }
     public DateTime Expiration { get; set; }
 
     public UserDto User { get; set; }
