@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using Npgsql;
 using TC.AspNetCore.Configurations;
-using TC.AspNetCore.DependencyInjection;
 using TC.DAL.Abstractions.Data;
 
 namespace TC.DAL.Data

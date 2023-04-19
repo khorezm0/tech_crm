@@ -47,5 +47,9 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="GameLobbyUsers\Scripts\" />
+    </ItemGroup>
+
 
 </Project>

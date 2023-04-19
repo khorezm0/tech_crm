@@ -1,5 +1,4 @@
-﻿using TC.AspNetCore.DependencyInjection;
-using TC.Business.Abstractions.Users;
+﻿using TC.Business.Abstractions.Users;
 using TC.Business.Abstractions.Users.Models;
 using TC.Common.Models;
 using TC.DAL.Abstractions.Users;

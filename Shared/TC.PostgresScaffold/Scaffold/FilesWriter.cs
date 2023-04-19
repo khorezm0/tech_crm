@@ -87,7 +87,7 @@ public class FilesWriter
         foreach (var col in cols)
         {
             var isNullable = col.IsNullable && col.DotNetType != typeof(string) ? "?" : "";
-            str.Append($"\tpublic {col.DotNetType.Name}{isNullable} {col.FormattedName} {{ get; set; }};\n");
+            str.Append($"\tpublic {col.DotNetType.Name}{isNullable} {col.FormattedName} {{ get; set; }}\n");
         }
 
         return str.ToString();

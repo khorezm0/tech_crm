@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using TC.AspNetCore.DependencyInjection;
 using TC.Common.Models;
 using TC.DAL.Abstractions.Data;
 using TC.DAL.Abstractions.Users;
